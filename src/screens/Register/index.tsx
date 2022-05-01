@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useForm } from 'react-hook-form'
-import { Keyboard, Modal, TouchableWithoutFeedback } from 'react-native'
+import * as Yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+
+import {
+  Keyboard,
+  Modal,
+  TouchableWithoutFeedback,
+  Alert
+} from 'react-native'
 
 import { InputForm } from "../../components/Forms/InputForm";
 import { Button } from "../../components/Forms/Button";
@@ -22,6 +30,17 @@ interface IFormData {
   amount: string;
 }
 
+const schema = Yup.object().shape({
+  name: Yup
+    .string()
+    .required('Informe um nome'),
+  amount: Yup
+    .number()
+    .required('Informe um preço')
+    .typeError('Informe um valor numérico')
+    .positive('O valor não pode ser negativo')
+})
+
 export function Register() {
   const [transactionType, setTransactionType] = useState('');
   const [categoryModalOpen, setCategoryModalOpen] = useState(false)
@@ -33,7 +52,12 @@ export function Register() {
   const {
     control,
     handleSubmit,
-  } = useForm()
+    formState: {
+      errors
+    }
+  } = useForm({
+    resolver: yupResolver(schema),
+  })
 
   function handleTransactionTypeSelect(type: 'up' | 'down') {
     setTransactionType(type);
@@ -48,6 +72,14 @@ export function Register() {
   }
 
   function handleRegister(form: Partial<IFormData>) {
+    if (!transactionType) {
+      return Alert.alert('Erro', "Selecione o tipo da transação")
+    }
+
+    if (category.key === 'category') {
+      return Alert.alert('Erro', "Selecione a categoria da transação")
+    }
+
     const data = {
       name: form.name,
       amount: form.amount,
@@ -67,6 +99,7 @@ export function Register() {
         <Form>
           <Fields>
             <InputForm
+              error={errors.name && errors.name.message}
               name="name"
               control={control}
               placeholder="Nome"
@@ -75,6 +108,7 @@ export function Register() {
             />
             <InputForm
               name="amount"
+              error={errors.amount && errors.amount.message}
               control={control}
               placeholder="Preço"
               keyboardType="numeric"
