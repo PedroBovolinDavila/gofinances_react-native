@@ -6,9 +6,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import {
   Keyboard,
   Modal,
-  TouchableWithoutFeedback,
   Alert
 } from 'react-native'
+
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 
 import { InputForm } from "../../components/Forms/InputForm";
 import { Button } from "../../components/Forms/Button";
@@ -91,7 +92,11 @@ export function Register() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback
+      containerStyle={{ flex: 1 }}
+      style={{ flex: 1 }}
+      onPress={Keyboard.dismiss}
+    >
       <Container>
         <Header>
           <Title>Cadastro</Title>
@@ -136,7 +141,6 @@ export function Register() {
           </Fields>
           <Button
             title="Enviar"
-            activeOpacity={.7}
             onPress={handleSubmit(handleRegister)}
           />
         </Form>

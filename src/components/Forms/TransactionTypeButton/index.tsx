@@ -1,13 +1,13 @@
 import React from "react";
-import { TouchableOpacityProps } from "react-native";
+import { TouchableHighlightProps } from "react-native";
 
 import {
   Container,
   Icon,
-  Title
+  Title,
 } from './styles'
 
-interface IProps extends TouchableOpacityProps {
+interface IProps extends TouchableHighlightProps {
   title: string;
   type: 'up' | 'down';
   active: boolean

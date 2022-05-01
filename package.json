@@ -40,6 +40,6 @@
   },
   "resolutions": {
     "@types/react": "17.0.43"
-},
+  },
   "private": true
 }

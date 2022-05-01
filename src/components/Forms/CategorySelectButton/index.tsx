@@ -13,7 +13,7 @@ interface IProps {
 
 export function CategorySelectButton({ title, onPress }: IProps) {
   return (
-    <Container onPress={onPress} >
+    <Container onPress={onPress}>
       <Category>
         {title}
       </Category>
