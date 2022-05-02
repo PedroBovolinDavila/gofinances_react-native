@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import { useForm } from 'react-hook-form'
-import * as Yup from 'yup'
-import { yupResolver } from '@hookform/resolvers/yup'
-
-import {
-  Keyboard,
-  Modal,
-  Alert
-} from 'react-native'
-
+import { Keyboard, Modal, Alert } from 'react-native'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
+import { useNavigation } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import * as Yup from 'yup'
+import { useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import uuid from 'react-native-uuid'
+
 
 import { InputForm } from "../../components/Forms/InputForm";
 import { Button } from "../../components/Forms/Button";
@@ -31,6 +30,10 @@ interface IFormData {
   amount: string;
 }
 
+interface INavigationProps {
+  navigate: (screen: string) => void;
+}
+
 const schema = Yup.object().shape({
   name: Yup
     .string()
@@ -50,12 +53,15 @@ export function Register() {
     name: 'Categoria',
   });
 
+  const dataKey = '@gofinance:transactions'
+
+  const navigation = useNavigation<INavigationProps>();
+
   const {
     control,
     handleSubmit,
-    formState: {
-      errors
-    }
+    reset,
+    formState: { errors }
   } = useForm({
     resolver: yupResolver(schema),
   })
@@ -72,7 +78,7 @@ export function Register() {
     setCategoryModalOpen(true);
   }
 
-  function handleRegister(form: Partial<IFormData>) {
+  async function handleRegister(form: Partial<IFormData>) {
     if (!transactionType) {
       return Alert.alert('Erro', "Selecione o tipo da transação")
     }
@@ -81,14 +87,40 @@ export function Register() {
       return Alert.alert('Erro', "Selecione a categoria da transação")
     }
 
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
       transactionType,
-      category: category.key
+      category: category.key,
+      date: new Date()
     }
 
-    console.log(data)
+    try {
+      const data = await AsyncStorage.getItem(dataKey)
+
+      const currentData = data ? JSON.parse(data) : []
+
+      const dataFormated = [
+        ...currentData,
+        newTransaction
+      ]
+
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormated));
+
+      reset();
+      setTransactionType('');
+      setCategory({
+        key: 'category',
+        name: 'Categoria'
+      })
+
+      navigation.navigate("Listagem");
+
+    } catch (err) {
+      console.log(err)
+      Alert.alert("Erro", "Não foi possivel salvar sua transação")
+    }
   }
 
   return (
@@ -141,6 +173,7 @@ export function Register() {
           </Fields>
           <Button
             title="Enviar"
+            activeOpacity={.7}
             onPress={handleSubmit(handleRegister)}
           />
         </Form>
