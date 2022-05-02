@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useFocusEffect } from '@react-navigation/native'
 
 import { ITransactionCardProps } from '../../components/TransactionCard'
 
@@ -26,41 +28,52 @@ export interface IDataListProps extends ITransactionCardProps {
 }
 
 export function Dashboard() {
-  const data: IDataListProps[] = [
-    {
-      id: '1',
-      amount: "R$ 12,000.000",
-      category: {
-        name: 'Venda',
-        icon: 'dollar-sign'
-      },
-      date: "12/04/2022",
-      type: 'positive',
-      title: "Venda de website"
-    },
-    {
-      id: '2',
-      amount: "R$ 59,00",
-      category: {
-        name: 'Alimentação',
-        icon: 'coffee'
-      },
-      type: 'negative',
-      date: "10/04/2022",
-      title: "Hamburgueria Pizzy"
-    },
-    {
-      id: '3',
-      amount: "R$ 1.200,00",
-      category: {
-        name: 'Casa',
-        icon: 'shopping-bag'
-      },
-      type: 'negative',
-      date: "08/04/2022",
-      title: "Aluguel do apartamento"
-    }
-  ]
+  const [data, setData] = useState<IDataListProps[]>([])
+
+  async function loadTransactions() {
+    const dataKey = '@gofinance:transactions'
+
+    const response = await AsyncStorage.getItem(dataKey);
+
+    const transactions = response ? JSON.parse(response!) : []
+
+    const transactionsFormatted: IDataListProps[] = transactions.map(
+      (item: IDataListProps) => {
+        let amount = Number(item.amount).toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+
+        amount = amount.replace('R$', 'R$ ');
+
+        const date = Intl.DateTimeFormat('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: '2-digit'
+        }).format(new Date(item.date));
+
+        return {
+          id: item.id,
+          name: item.name,
+          amount,
+          type: item.type,
+          category: item.category,
+          date
+        }
+      }
+    );
+
+    setData(transactionsFormatted)
+  }
+
+  useEffect(() => {
+    loadTransactions()
+  }, [])
+
+  useFocusEffect(useCallback(() => {
+    loadTransactions()
+  }, []))
+
 
   return (
     <Container>

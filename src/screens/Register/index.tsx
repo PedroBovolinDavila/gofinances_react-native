@@ -91,7 +91,7 @@ export function Register() {
       id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionType,
+      type: transactionType,
       category: category.key,
       date: new Date()
     }
@@ -102,8 +102,8 @@ export function Register() {
       const currentData = data ? JSON.parse(data) : []
 
       const dataFormated = [
-        ...currentData,
-        newTransaction
+        newTransaction,
+        ...currentData
       ]
 
       await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormated));
