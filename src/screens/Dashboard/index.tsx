@@ -19,7 +19,6 @@ import {
   Transactions,
   Title,
   TransactionsList,
-  LoggoutButton
 } from './styles'
 
 export interface IDataListProps extends ITransactionCardProps {
@@ -77,9 +76,7 @@ export function Dashboard() {
             </User>
           </UserInfo>
 
-          <LoggoutButton>
-            <Icon name="power" />
-          </LoggoutButton>
+          <Icon name="power" />
 
         </UserWrapper>
       </Header>
