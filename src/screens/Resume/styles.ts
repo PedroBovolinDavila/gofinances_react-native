@@ -21,9 +21,17 @@ export const Title = styled.Text`
   font-size: ${RFValue(18)}px;
 `;
 
-export const Content = styled.ScrollView.attrs({
-  contentContainerStyle: {
-    flex: 1,
-    padding: 24,
-  },
-})``;
+export const Content = styled.ScrollView``;
+
+export const ChartContainer = styled.View`
+  width: 100%;
+  align-items: center;
+`;
+
+export const MonthSelect = styled.View``;
+
+export const MonthSelectButton = styled.View``;
+
+export const SelectIcon = styled.View``;
+
+export const Month = styled.View``;
