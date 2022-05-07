@@ -3,8 +3,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import { ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { RFValue } from 'react-native-responsive-fontsize';
+
 import { addMonths, subMonths, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+
+import { useAuth } from '../../hooks/auth';
 
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
@@ -29,6 +32,7 @@ import {
 
 import { useTheme } from 'styled-components'
 
+
 interface ITransactionData {
   name: string;
   amount: string;
@@ -51,6 +55,8 @@ export function Resume() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalByCategories, setTotalByCategories] = useState<ICategoryData[]>([])
 
+  const { user } = useAuth();
+
   const theme = useTheme();
 
   function handleDateChange(action: 'next' | 'prev') {
@@ -65,7 +71,7 @@ export function Resume() {
   async function loadData() {
     setIsLoading(true)
 
-    const dataKey = '@gofinance:transactions'
+    const dataKey = `@gofinance:transactions_user:${user.id}`
     const response = await AsyncStorage.getItem(dataKey)
     const responseFormatted = response ? JSON.parse(response) : []
 

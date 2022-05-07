@@ -4,6 +4,8 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { useAuth } from "../../hooks/auth";
+
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -53,7 +55,9 @@ export function Register() {
     name: 'Categoria',
   });
 
-  const dataKey = '@gofinance:transactions'
+  const { user } = useAuth();
+
+  const dataKey = `@gofinance:transactions_user:${user.id}`
 
   const navigation = useNavigation<INavigationProps>();
 
