@@ -107,7 +107,7 @@ function AuthProvider({ children }: IProps) {
           id: credential.user,
           email: credential.email!,
           name: credential.fullName?.givenName!,
-          photo: undefined
+          photo: `https://ui-avatars.com/api/?name=${credential.fullName?.givenName}&length=1`
         }
 
         setUser(userLogged)

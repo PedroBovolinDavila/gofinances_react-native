@@ -50,7 +50,7 @@ export function Dashboard() {
   const [transactions, setTransactions] = useState<IDataListProps[]>([])
   const [highlightCardData, setHighlightCardData] = useState<IHighlightCardData>({} as IHighlightCardData);
 
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
 
   const theme = useTheme();
 
@@ -178,11 +178,11 @@ export function Dashboard() {
               <UserWrapper>
                 <UserInfo>
                   <Photo
-                    source={{ uri: 'https://github.com/pedrobovolindavila.png' }}
+                    source={{ uri: user.photo }}
                   />
                   <User>
                     <UserGreeting>Olá, </UserGreeting>
-                    <Username>Pedro</Username>
+                    <Username>{user.name}</Username>
                   </User>
                 </UserInfo>
 
