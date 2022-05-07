@@ -6,9 +6,12 @@ import React, {
 } from 'react'
 
 import * as AuthSession from 'expo-auth-session'
+import * as AppleAuthentication from 'expo-apple-authentication'
+
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface IProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 interface IUser {
@@ -21,6 +24,7 @@ interface IUser {
 interface IAuthContextData {
   user: IUser;
   signInWithGoogle: () => Promise<void>;
+  signInWithApple: () => Promise<void>;
 }
 
 interface IAuthorizationResponse {
@@ -38,6 +42,8 @@ const AuthContext = createContext({} as IAuthContextData)
 function AuthProvider({ children }: IProps) {
   const [user, setUser] = useState<IUser>({} as IUser)
 
+  const userKey = '@gofinance:user'
+
   async function signInWithGoogle() {
     try {
       const RESPONSE_TYPE = 'token';
@@ -51,14 +57,16 @@ function AuthProvider({ children }: IProps) {
         const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`)
         const userInfo = await response.json();
 
-        setUser({
+        const userLogged = {
           id: userInfo.id,
           email: userInfo.email,
           name: userInfo.given_name,
           photo: userInfo.picture
-        });
+        }
 
-        console.log(user)
+        setUser(userLogged);
+
+        await AsyncStorage.setItem(userKey, JSON.stringify(userLogged));
       }
 
     } catch (err) {
@@ -66,10 +74,38 @@ function AuthProvider({ children }: IProps) {
     }
   }
 
+  async function signInWithApple() {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL
+        ]
+      })
+
+      if (credential) {
+        const userLogged = {
+          id: credential.user,
+          email: credential.email!,
+          name: credential.fullName?.givenName!,
+          photo: undefined
+        }
+
+        setUser(userLogged)
+
+        await AsyncStorage.setItem(userKey, JSON.stringify(userLogged));
+      }
+
+    } catch (err) {
+      throw new Error(err as string)
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
-      signInWithGoogle
+      signInWithGoogle,
+      signInWithApple
     }}>
       {children}
     </AuthContext.Provider>

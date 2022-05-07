@@ -21,7 +21,7 @@ import { RFValue } from 'react-native-responsive-fontsize'
 import { useAuth } from '../../hooks/auth'
 
 export function SignIn() {
-  const { signInWithGoogle } = useAuth()
+  const { signInWithGoogle, signInWithApple } = useAuth()
 
   async function handleSignInWithGoogle() {
     try {
@@ -31,6 +31,17 @@ export function SignIn() {
     } catch (err) {
       console.log(err)
       Alert.alert('Erro', 'Não foi possivel conectar a conta Google, tente novamente')
+    }
+  }
+
+  async function handleSignInWithApple() {
+    try {
+
+      await signInWithApple();
+
+    } catch (err) {
+      console.log(err)
+      Alert.alert('Erro', 'Não foi possivel conectar a conta Apple, tente novamente')
     }
   }
 
@@ -67,6 +78,7 @@ export function SignIn() {
             activeOpacity={.9}
             title='Entrar com Apple'
             svg={AppleSvg}
+            onPress={handleSignInWithApple}
           />
         </FooterWrapper>
       </Footer>
