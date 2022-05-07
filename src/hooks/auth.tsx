@@ -2,6 +2,7 @@ import React, {
   createContext,
   ReactNode,
   useContext,
+  useEffect,
   useState
 } from 'react'
 
@@ -41,8 +42,24 @@ const AuthContext = createContext({} as IAuthContextData)
 
 function AuthProvider({ children }: IProps) {
   const [user, setUser] = useState<IUser>({} as IUser)
+  const [isLoading, setIsLoading] = useState(true);
 
   const userKey = '@gofinance:user'
+
+  useEffect(() => {
+    async function loadUserStorageData() {
+      const data = await AsyncStorage.getItem(userKey)
+
+      if (data) {
+        const userLogged = JSON.parse(data) as IUser;
+        setUser(userLogged);
+      }
+
+      setIsLoading(false);
+    }
+
+    loadUserStorageData()
+  }, [])
 
   async function signInWithGoogle() {
     try {
