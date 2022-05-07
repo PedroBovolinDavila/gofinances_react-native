@@ -7,6 +7,8 @@ import { StatusBar } from 'react-native';
 import { ThemeProvider } from 'styled-components'
 import AppLoading from 'expo-app-loading';
 
+import { AuthProvider } from './src/hooks/auth'
+
 import {
   useFonts,
   Poppins_400Regular,
@@ -41,7 +43,11 @@ export default function App() {
           translucent
         />
         {/* <AppRoutes /> */}
-        <SignIn />
+
+        <AuthProvider>
+          <SignIn />
+        </AuthProvider>
+
       </NavigationContainer>
     </ThemeProvider>
   )
