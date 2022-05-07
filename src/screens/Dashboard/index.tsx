@@ -3,6 +3,8 @@ import { ActivityIndicator } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useFocusEffect } from '@react-navigation/native'
 
+import { useAuth } from '../../hooks/auth'
+
 import { ITransactionCardProps } from '../../components/TransactionCard'
 
 import { HighlightCard } from '../../components/HighlightCard'
@@ -22,7 +24,8 @@ import {
   Transactions,
   Title,
   TransactionsList,
-  LoadContainer
+  LoadContainer,
+  LogoutButton
 } from './styles'
 
 import { useTheme } from 'styled-components'
@@ -46,6 +49,8 @@ export function Dashboard() {
   const [isLoading, setIsLoading] = useState(true)
   const [transactions, setTransactions] = useState<IDataListProps[]>([])
   const [highlightCardData, setHighlightCardData] = useState<IHighlightCardData>({} as IHighlightCardData);
+
+  const { signOut } = useAuth();
 
   const theme = useTheme();
 
@@ -181,7 +186,12 @@ export function Dashboard() {
                   </User>
                 </UserInfo>
 
-                <Icon name="power" />
+                <LogoutButton
+                  activeOpacity={.8}
+                  onPress={signOut}
+                >
+                  <Icon name="power" />
+                </LogoutButton>
 
               </UserWrapper>
             </Header>
